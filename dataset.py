@@ -1,6 +1,8 @@
 import os
+import pickle
 import random
 import warnings
+from time import time
 
 import librosa
 import numpy as np
@@ -71,3 +73,13 @@ class AudioDataset(Dataset):
             target = emotion_dict.get(tokens[1])
         else:
             raise ValueError("请检查文件名！")
+
+        return target
+
+
+if __name__ == "__main__":
+    start_time = time()
+    dataset = AudioDataset()
+    with open('./pickles/train_set.pkl', 'wb') as f:
+        pickle.dump({'data': dataset.data, 'labels': dataset.targets}, f)
+    print("Total time : %.3f" % (time()-start_time))
