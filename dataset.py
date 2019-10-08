@@ -13,6 +13,7 @@ from extract_features import get_mfcc
 
 # root_dir = "/run/media/dallasautumn/data/duan-qiu-yang/2019-2020-现代程序设计技术-大作业-数据/A类问题/A3-闻声知乐/CASIA情感语料库/CASIA情感语料库"
 # print(os.listdir(base_dir))
+ROOT_DIR = "/run/media/dallasautumn/data/duan-qiu-yang/CASIA_train_test"
 
 
 class AudioDataset(Dataset):
@@ -22,7 +23,7 @@ class AudioDataset(Dataset):
     Thanks for the previous work of Weng Di :)
     """
 
-    def __init__(self, root="./datasets", train=True, transform=None, target_transform=None):
+    def __init__(self, root=ROOT_DIR, train=True, transform=None, target_transform=None):
         self.root = root
         self.train = train  # "train" or "test"
         self.transform = transform
