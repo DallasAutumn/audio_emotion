@@ -4,18 +4,15 @@ import random
 import warnings
 from time import time
 
-import librosa
 import numpy as np
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
-from torchaudio import transforms
 
 from extract_features import get_mfcc
+from transforms import ToTensor
 
-# root_dir = "/run/media/dallasautumn/data/duan-qiu-yang/2019-2020-现代程序设计技术-大作业-数据/A类问题/A3-闻声知乐/CASIA情感语料库/CASIA情感语料库"
-# print(os.listdir(base_dir))
-ROOT_DIR = "/run/media/dallasautumn/data/duan-qiu-yang/CASIA_train_test"
+warnings.filterwarnings("ignore")
 
 
 class AudioDataset(Dataset):
@@ -25,16 +22,20 @@ class AudioDataset(Dataset):
     Thanks for the previous work of Weng Di :)
     """
 
-    def __init__(self, root=ROOT_DIR, train=True, transform=None, target_transform=None):
+    def __init__(self, root=None, train=None, transform=None, target_transform=None):
         self.root = root
         self.train = train  # "train" or "test"
         self.transform = transform
         self.target_transform = target_transform
 
-        if self.train:
+        if self.train is True:
             self.filedir = os.path.join(self.root, "train")
-        else:
+        elif self.train is False:
             self.filedir = os.path.join(self.root, "test")
+        elif self.train is None:
+            self.filedir = self.root
+        else:
+            raise ValueError("Expected a boolean value, got", type(self.train))
 
         self.data = [self.get_data(filename)
                      for filename in os.listdir(self.filedir)]
@@ -42,24 +43,22 @@ class AudioDataset(Dataset):
                         for filename in os.listdir(self.filedir)]
 
     def __getitem__(self, index):
-        mfcc, target = self.data[index], self.targets[index]
+        data = self.data[index]
+        target = self.targets[index]
 
         if self.transform is not None:
-            mfcc = self.transform(mfcc)
+            data = self.transform(data)
 
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return mfcc, target
+        return data, target
 
     def __len__(self):
         return len(self.data)
 
-    def get_data(self, filename):
-        filepath = os.path.join(self.filedir, filename)
-        mfcc = get_mfcc(filepath, n_mfcc=26)
-
-        return mfcc
+    def get_data(self):
+        raise NotImplementedError
 
     def get_labels(self, filename):
         tokens = filename.split(sep='_')
@@ -77,9 +76,22 @@ class AudioDataset(Dataset):
         return target
 
 
+class MfccDataset(AudioDataset):
+    """提取mfcc特征"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_data(self, filename):
+        filepath = os.path.join(self.filedir, filename)
+        mfcc = get_mfcc(filepath, n_mfcc=26)
+
+        return mfcc
+
+
 if __name__ == "__main__":
     start_time = time()
-    dataset = AudioDataset()
+    dataset = MfccDataset()
     with open('./pickles/train_set.pkl', 'wb') as f:
         pickle.dump({'data': dataset.data, 'labels': dataset.targets}, f)
     print("Total time : %.3f" % (time()-start_time))
