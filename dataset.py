@@ -1,15 +1,18 @@
+import logging
 import os
 import pickle
 import random
 import warnings
+from os.path import join as path_join
 from time import time
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+from joblib import Parallel, delayed
 from torch.utils.data import DataLoader, Dataset
 
-from extract_features import get_mfcc
+from extract_features import get_mfcc, get_spectrogram
 from transforms import ToTensor
 
 warnings.filterwarnings("ignore")
@@ -19,14 +22,14 @@ class AudioDataset(Dataset):
     """
     定义音频情感数据集
     从testandtrain中抽取
-    Thanks for the previous work of Weng Di :)
     """
 
-    def __init__(self, root=None, train=None, transform=None, target_transform=None):
+    def __init__(self, root=None, train=None, transform=None, target_transform=None, n_jobs=1):
         self.root = root
         self.train = train  # "train" or "test"
         self.transform = transform
         self.target_transform = target_transform
+        self.n_jobs = n_jobs
 
         if self.train is True:
             self.filedir = os.path.join(self.root, "train")
@@ -37,10 +40,10 @@ class AudioDataset(Dataset):
         else:
             raise ValueError("Expected a boolean value, got", type(self.train))
 
-        self.data = [self.get_data(filename)
-                     for filename in os.listdir(self.filedir)]
-        self.targets = [self.get_labels(filename)
-                        for filename in os.listdir(self.filedir)]
+        self.data = Parallel(n_jobs=self.n_jobs, prefer='threads')(delayed(self.get_data)(filename)
+                                                                   for filename in os.listdir(self.filedir))
+        self.targets = Parallel(n_jobs=self.n_jobs, prefer='threads')(delayed(self.get_labels)(filename)
+                                                                      for filename in os.listdir(self.filedir))
 
     def __getitem__(self, index):
         data = self.data[index]
@@ -56,6 +59,9 @@ class AudioDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+    def __repr__(self):
+        return f"Audio dataset with length {len(self.data)}"
 
     def get_data(self):
         raise NotImplementedError
@@ -82,6 +88,9 @@ class MfccDataset(AudioDataset):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def __repr__(self):
+        return f"A mfcc dataset with length {len(self)}"
+
     def get_data(self, filename):
         filepath = os.path.join(self.filedir, filename)
         mfcc = get_mfcc(filepath, n_mfcc=26)
@@ -89,9 +98,43 @@ class MfccDataset(AudioDataset):
         return mfcc
 
 
+class MelspecDataset(AudioDataset):
+    """提取频谱图"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f"A melspectrogram dataset with length {len(self)}"
+
+    def get_data(self, filename):
+        filepath = os.path.join(self.filedir, filename)
+        specgram = get_spectrogram(filepath)
+
+        return specgram
+
+
 if __name__ == "__main__":
-    start_time = time()
-    dataset = MfccDataset()
-    with open('./pickles/train_set.pkl', 'wb') as f:
-        pickle.dump({'data': dataset.data, 'labels': dataset.targets}, f)
-    print("Total time : %.3f" % (time()-start_time))
+    from config import ROOT_DIR
+    n_jobs = -1
+    # start_time = time()
+    # dataset = MfccDataset()
+    # with open('./pickles/train_set.pkl', 'wb') as f:
+    #     pickle.dump({'data': dataset.data, 'labels': dataset.targets}, f)
+    # print("Total time : %.3f" % (time()-start_time))
+    start = time()
+
+    train_set = MfccDataset(
+        root=path_join(ROOT_DIR, "相同文本300"), train=True, transform=None, n_jobs=n_jobs)
+
+    val_set = MfccDataset(
+        root=path_join(ROOT_DIR, "不同文本100"), transform=None, n_jobs=n_jobs)
+
+    test_set = MfccDataset(
+        root=path_join(ROOT_DIR, "相同文本300"), train=False, transform=None, n_jobs=n_jobs)
+
+    print('total time:', time()-start)
+
+    print(train_set)
+    print(val_set)
+    print(test_set)

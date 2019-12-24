@@ -1,4 +1,4 @@
-# author：段秋阳，张亦钊
+# author：段秋阳
 
 ## 目的：建立一套自动化系统，接收人声并判断情绪。（bonus：情感语音生成）
 
@@ -7,8 +7,13 @@
 2. BiLSTM时间序列，或CNN对spectrogram图像进行分类，从而情感分类。
 
 ## 使用工具：
-1. pytorch torchaudio tensorflow keras
+1. pytorch torchaudio
 2. librosa
+
+## 已有的结果总结：
+- 数据的一系列预处理，包括提取mfcc特征，输入模型所做的准备如padding
+- CNN conv2d training
+- [https://github.com/DallasAutumn/audio_emotion](https://github.com/DallasAutumn/audio_emotion)
 
 ## 参考资料：
 1. [https://towardsdatascience.com/speech-emotion-recognition-with-convolution-neural-network-1e6bb7130ce3](https://towardsdatascience.com/speech-emotion-recognition-with-convolution-neural-network-1e6bb7130ce3)

@@ -2,12 +2,18 @@ import torch
 import torch.nn as nn
 
 
-class ToTensor():
+class ToTensor:
     def __call__(self, mfcc):
         return torch.from_numpy(mfcc)
 
 
-class PaddingSame2d():
+class Normalize:
+    def __call__(self, tensor):
+        tensor_minusmin = tensor - tensor.min()
+        return tensor_minusmin / tensor_minusmin.abs().max()
+
+
+class PaddingSame2d:
     """
     Padding to the same given sequence length.
     """
