@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import pickle
@@ -12,10 +13,11 @@ import torch.nn.functional as F
 from joblib import Parallel, delayed
 from torch.utils.data import DataLoader, Dataset
 
-from extract_features import get_mfcc, get_spectrogram
-from transforms import ToTensor
+from extract_features import *
 
 warnings.filterwarnings("ignore")
+
+emotion_dict = json.load(open("class_index.json"), encoding='utf-8')
 
 
 class AudioDataset(Dataset):
@@ -25,6 +27,15 @@ class AudioDataset(Dataset):
     """
 
     def __init__(self, root=None, train=None, transform=None, target_transform=None, n_jobs=1):
+        """
+        Args:
+            root: str, the file directory.
+            train: bool, specify training set or testing set.
+            transform: a callable transform class, if not none, apply the transform to tensor.
+            target_transform: same as transform, apply it to the target(label) instead.
+            n_jobs: the number of workers to use when loading data, if not specified, use only 1 process as default.
+        """
+
         self.root = root
         self.train = train  # "train" or "test"
         self.transform = transform
@@ -64,18 +75,21 @@ class AudioDataset(Dataset):
         return f"Audio dataset with length {len(self.data)}"
 
     def get_data(self):
+        """This method must be overridden by its subclasses."""
+
         raise NotImplementedError
 
     def get_labels(self, filename):
         tokens = filename.split(sep='_')
         # "This criterion(CrossEntropyLoss) expects a class index in the range [0, C-1] as the target for each value of a 1D tensor of size minibatch; if ignore_index is specified, this criterion also accepts this class index (this index may not necessarily be in the class range)". --from pytorch documentation.
-        emotion_dict = {'angry': 0, 'fear': 1, 'happy': 2,
-                        'neutral': 3, 'sad': 4, 'surprise': 5}
+
+        # emotion_dict = {'angry': 0, 'fear': 1, 'happy': 2,
+        #                 'neutral': 3, 'sad': 4, 'surprise': 5}
 
         if tokens[0] == "neutral":
-            target = emotion_dict.get("neutral")
+            target = int(emotion_dict.get("neutral"))
         elif tokens[0] == "emotional":
-            target = emotion_dict.get(tokens[1])
+            target = int(emotion_dict.get(tokens[1]))
         else:
             raise ValueError("请检查文件名！")
 

@@ -27,7 +27,6 @@ def get_spectrogram(audio_file_path):
 
 
 if __name__ == "__main__":
-    sg = get_spectrogram('001.wav')
-    print(sg.shape)
-    plt.imshow(sg.log2()[0, :, :])
-    plt.show()
+    sg1 = get_spectrogram('001.wav')
+    sg2 = get_spectrogram('201.wav')
+    print(sg1.shape, sg2.shape)

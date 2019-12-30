@@ -1,3 +1,4 @@
+from torchvision.transforms import Compose
 import torch
 import torch.nn as nn
 
@@ -27,8 +28,8 @@ class PaddingSame2d:
     def __call__(self, tensor):
         assert isinstance(tensor, torch.Tensor)
 
-        m = nn.ConstantPad2d(
+        pad = nn.ConstantPad2d(
             padding=(0, self.seq_len-tensor.shape[1], 0, 0),
             value=self.value
         )
-        return m(tensor)
+        return pad(tensor)

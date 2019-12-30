@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="../static/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+
+    </div>
+
+    <script type="text/javascript">
+        var data = {
+            a: 1
+        };
+
+        var vm = new Vue({
+            el: '#app',
+            data: data,
+            created: function () {
+                console.log('a is: ' + this.a)
+            }
+        });
+    </script>
+</body>
+
+</html>

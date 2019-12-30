@@ -1,14 +1,11 @@
 from collections import OrderedDict
 
-import keras
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.nn.utils.rnn as rnn_utils
 import torch.optim as optim
 from torch.utils.data import DataLoader
-
-from dataset import AudioDataset, ToTensor
 
 
 class Flatten(nn.Module):
@@ -19,26 +16,21 @@ class Flatten(nn.Module):
 
 
 class CNN(nn.Module):
-    def __init__(self, output_size=6):
+    def __init__(self):
         super(CNN, self).__init__()
         self.cnn = nn.Sequential(
+            nn.Conv2d(1, 8, kernel_size=13, stride=13),
+            #             nn.MaxPool2d(kernel_size=2),
+            nn.ReLU(),
+            #             nn.Dropout(0.1),
             Flatten(),
-            nn.Conv1d(1, 6, kernel_size=5),
-            nn.ReLU(),
-            nn.Conv1d(6, 16, kernel_size=5),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.MaxPool1d(kernel_size=8),
-            nn.Conv1d(16, 10, kernel_size=5),
-            nn.ReLU(),
-            nn.Conv1d(10, 10, kernel_size=5),
-            nn.ReLU(),
-            Flatten(),
-            nn.Linear(10, output_size),
-            nn.Softmax(dim=1),
+            nn.Linear(136, 6),
+
+            nn.Softmax()
         )
 
     def forward(self, x):
+        x = x.unsqueeze(dim=1)
         x = self.cnn(x)
         return x
 
