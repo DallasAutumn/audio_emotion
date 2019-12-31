@@ -23,7 +23,8 @@ emotion_dict = json.load(open("class_index.json"), encoding='utf-8')
 class AudioDataset(Dataset):
     """
     定义音频情感数据集
-    从testandtrain中抽取
+    继承自pytorch的Dataset
+    便于利用pytorch提供的DataLoader进行批量加载
     """
 
     def __init__(self, root=None, train=None, transform=None, target_transform=None, n_jobs=1):

@@ -35,11 +35,6 @@ class CNN(nn.Module):
         return x
 
 
-class LSTM(nn.Module):
-    def __init__(self):
-        super(LSTM, self).__init__()
-
-
 def collate_fn(data):
     data.sort(key=lambda x: len(x), reverse=True)
     # data_length = [len(sq) for sq in data]

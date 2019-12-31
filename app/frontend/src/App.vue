@@ -1,17 +1,25 @@
 <template>
-  <uploader :options="options" class="uploader-example">
-    <uploader-unsupport></uploader-unsupport>
-    <uploader-drop>
-      <p>Drop files here to upload or</p>
-      <uploader-btn>select files</uploader-btn>
-      <uploader-btn :attrs="attrs">select images</uploader-btn>
-      <uploader-btn :directory="true">select folder</uploader-btn>
-    </uploader-drop>
-    <uploader-list></uploader-list>
-  </uploader>
+  <div class="uploader">
+    <uploader :options="options" class="uploader-example">
+      <uploader-unsupport></uploader-unsupport>
+      <uploader-drop>
+        <h2>上传文件</h2>
+        <h5>选择或拖动文件（文件夹）到此处</h5>
+        <uploader-btn>选择文件</uploader-btn>
+        <uploader-btn :attrs="attrs">选择图片</uploader-btn>
+        <uploader-btn :directory="true">选择文件夹</uploader-btn>
+      </uploader-drop>
+      <uploader-list></uploader-list>
+    </uploader>
+
+    <div class="result"></div>
+  </div>
 </template>
 
 <script>
+import axios from "axios";
+import Swiper from "swiper";
+
 export default {
   data() {
     return {
@@ -24,6 +32,10 @@ export default {
         accept: "image/*"
       }
     };
+  },
+
+  methods: {
+    getPredFromBackend() {}
   }
 };
 </script>
@@ -35,6 +47,8 @@ export default {
   margin: 40px auto 0;
   font-size: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  background: url(./assets/img/buaa.jpeg) no-repeat;
+  background-size: 100% 100%;
 }
 .uploader-example .uploader-btn {
   margin-right: 4px;
@@ -44,5 +58,13 @@ export default {
   overflow: auto;
   overflow-x: hidden;
   overflow-y: auto;
+}
+.uploader-example .uploader-drop {
+  text-align: center;
+  /* width: 540px; */
+  margin: auto;
+}
+.result {
+  text-align: center;
 }
 </style>

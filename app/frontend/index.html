@@ -1,12 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>语音情感分类系统</title>
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+  <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="https://github.com/DallasAutumn/audio_emotion">项目地址</a>
+      </div>
+      <div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="http://zhaojichang.cn">团队主页</a></li>
+          <li><a href="/">机器学习——从入门到转前端开发</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              参考资料
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="https://pytorch.org">pytorch docs</a></li>
+              <li><a href="https://towardsdatascience.com/">Towards Data Science</a></li>
+              <li><a href="https://github.com/Di-Weng">翁迪</a></li>
+              <!-- <li class="divider"></li>
+              <li><a href="#">分离的链接</a></li>
+              <li class="divider"></li>
+              <li><a href="#">另一个分离的链接</a></li> -->
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="app">
+    <img src="./src/assets/img/logo.png">
+    <router-view />
+  </div>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>
