@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "swiper": "^5.2.1",
+    "swiper": "^6.5.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-simple-uploader": "^0.7.4"
